@@ -4,6 +4,8 @@
 
 #include "DestroyableGroundObject.h"
 
+class Bomb;
+
 class House : public DestroyableGroundObject
 {
 public:
@@ -11,7 +13,7 @@ public:
 	bool __fastcall isInside(double x1, double x2) const override;
 
 	inline uint16_t GetScore() const override { return score; }
-
+	bool HandleInsideCheck(Bomb* pbomb) override;
 	void Draw() const override;
 
 private:

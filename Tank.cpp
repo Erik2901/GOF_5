@@ -3,6 +3,7 @@
 
 #include "Tank.h"
 #include "MyTools.h"
+#include "Bomb.h"
 
 using namespace std;
 using namespace MyTools;
@@ -41,4 +42,12 @@ void Tank::Draw() const
 	cout << "    #####";
 	GotoXY(x,y);
 	cout << " ###########";
+}
+
+bool Tank::HandleInsideCheck(Bomb* pbomb) {
+	const double size = pbomb->GetWidth();
+	const double size_2 = size / 2;
+	const double x1 = pbomb->GetX() - size_2;
+	const double x2 = x1 + size;
+	return (isInside(x1, x2));
 }

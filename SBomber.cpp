@@ -8,6 +8,7 @@
 #include "Ground.h"
 #include "Tank.h"
 #include "House.h"
+#include "Visitor.h"
 
 using namespace std;
 using namespace MyTools;
@@ -95,12 +96,13 @@ SBomber::~SBomber()
 void SBomber::MoveObjects()
 {
     WriteToLog(string(__FUNCTION__) + " was invoked");
-
+    std::unique_ptr<LogVisitor> logv = std::make_unique<LogVisitor>();
     for (size_t i = 0; i < vecDynamicObj.size(); i++)
     {
         if (vecDynamicObj[i] != nullptr)
         {
             vecDynamicObj[i]->Move(deltaTime);
+            vecDynamicObj[i]->Accept(*logv);
         }
     }
 };
@@ -131,13 +133,17 @@ void SBomber::CheckBombsAndGround()
         if (vecBombs[i]->GetY() >= y) // Пересечение бомбы с землей
         {
             pGround->AddCrater(vecBombs[i]->GetX());
-            CheckDestoyableObjects(vecBombs[i]);
+            //CheckDestoyableObjects(vecBombs[i]);
             DeleteDynamicObj(vecBombs[i]);
+            if (vecBombs[i]->CheckDestoyableObjects(FindDestoyableGroundObjects()) != nullptr)
+            {
+                score += vecBombs[i]->CheckDestoyableObjects(FindDestoyableGroundObjects())->GetScore();
+                DeleteStaticObj(vecBombs[i]->CheckDestoyableObjects(FindDestoyableGroundObjects()));
+            }
         }
     }
-
 }
-
+/*
 void SBomber::CheckDestoyableObjects(Bomb * pBomb)
 {
     vector<DestroyableGroundObject*> vecDestoyableObjects = FindDestoyableGroundObjects();
@@ -154,7 +160,7 @@ void SBomber::CheckDestoyableObjects(Bomb * pBomb)
         }
     }
 }
-
+*/
 void SBomber::DeleteDynamicObj(DynamicObject* pObj)
 {
     auto it = vecDynamicObj.begin();
